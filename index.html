@@ -1,1 +1,53 @@
-<!DOCTYPE html><html><body><p>Missing content</p></body></html>
+<!DOCTYPE html><html><body><p><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Location History Map Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    const map = L.map('map').setView([33.66, -95.55], 10); // Default center
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    fetch('location-history.json')
+      .then(response => response.json())
+      .then(data => {
+        if (!data || !Array.isArray(data.locations)) {
+          alert("Invalid data format.");
+          return;
+        }
+
+        data.locations.forEach(entry => {
+          if (entry.latitude && entry.longitude) {
+            const marker = L.marker([entry.latitude, entry.longitude]).addTo(map);
+            marker.bindPopup(`<b>${entry.timestamp || "No time"}</b>`);
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Error loading JSON:', error);
+        alert('Failed to load location-history.json');
+      });
+  </script>
+</body>
+</html></p></body></html>
